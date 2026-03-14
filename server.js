@@ -27,7 +27,13 @@ app.get('/{*path}', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
-    console.log(`✨ NJ Saree Drapist server running at http://localhost:${PORT}`);
-    console.log(`🔧 Admin panel: http://localhost:${PORT}/admin`);
-});
+// Conditionally listen if not on Vercel
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`✨ NJ Saree Drapist server running at http://localhost:${PORT}`);
+        console.log(`🔧 Admin panel: http://localhost:${PORT}/admin`);
+    });
+}
+
+// Export the Express API
+module.exports = app;

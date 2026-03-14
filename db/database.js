@@ -1,7 +1,12 @@
 const path = require('path');
 const Database = require('better-sqlite3');
+const os = require('os');
 
-const dbPath = path.join(__dirname, '..', 'reviews.db');
+// In Vercel, the only writable path is /tmp
+const isVercel = process.env.VERCEL === '1' || process.env.VERCEL === 'true' || process.env.VERCEL;
+const dbDir = isVercel ? os.tmpdir() : path.join(__dirname, '..');
+const dbPath = path.join(dbDir, 'reviews.db');
+
 const db = new Database(dbPath);
 
 // Enable WAL mode for better performance
