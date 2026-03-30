@@ -15,7 +15,7 @@ const os = require('os');
 app.use('/local-tmp', express.static(os.tmpdir()));
 
 // API Routes
-app.use('/api/reviews', require('./routes/reviews'));
+app.use('/api/reviews', require('./routes/review'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/portfolio', require('./routes/portfolio'));
 // Keep old route working for a while if needed, or point it to the new one
