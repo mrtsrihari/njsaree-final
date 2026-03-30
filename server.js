@@ -11,20 +11,58 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
+const os = require('os');
+app.use('/local-tmp', express.static(os.tmpdir()));
 
 // API Routes
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/portfolio', require('./routes/portfolio'));
+// Keep old route working for a while if needed, or point it to the new one
+app.use('/api/bridal-portfolio', require('./routes/portfolio'));
 
-// Serve admin panel (protected by basic auth in the route)
+// ══════════════════════════════════════
+//  MULTI-PAGE ROUTES
+// ══════════════════════════════════════
+
+// Home page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'home.html'));
+});
+
+// Portfolio page
+app.get('/portfolio', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'portfolio.html'));
+});
+
+// Instagram page
+app.get('/instagram', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'instagram.html'));
+});
+
+// Reviews page
+app.get('/reviews', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'reviews.html'));
+});
+
+// Contact page
+app.get('/contact', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'contact.html'));
+});
+
+// Admin login page
 app.get('/admin', (req, res) => {
-    // Auth is handled by the admin.html page making API calls with credentials
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// Fallback to index (Express 5 catch-all syntax)
+// Admin dashboard page
+app.get('/admin-dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin-dashboard.html'));
+});
+
+// Fallback — 404 page
 app.get('/{*path}', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.status(404).sendFile(path.join(__dirname, 'public', 'home.html'));
 });
 
 // Conditionally listen if not on Vercel

@@ -1,419 +1,462 @@
 /* ═══════════════════════════════════════════════════
-   NJ SAREE DRAPIST — Client-Side Application
+   NJ SAREE DRAPIST — Multi-Page App Script
+   Handles: navigation, scroll effects, animations,
+   reviews, instagram grid, portfolio filters, lightbox,
+   and bridal gallery (dynamic from Cloudinary).
    ═══════════════════════════════════════════════════ */
 
-document.addEventListener('DOMContentLoaded', () => {
+(function () {
+  'use strict';
 
-  // ─── Navbar Scroll Effect ─────────────────────────
-  const navbar = document.getElementById('navbar');
-  const navLinks = document.querySelectorAll('.nav-link');
-
-  function handleNavScroll() {
-    if (window.scrollY > 60) {
-      navbar.classList.add('scrolled');
-    } else {
-      navbar.classList.remove('scrolled');
-    }
-  }
-  window.addEventListener('scroll', handleNavScroll, { passive: true });
-  handleNavScroll();
-
-  // ─── Active Nav Link on Scroll ────────────────────
-  const sections = document.querySelectorAll('section[id]');
-
-  function highlightNavLink() {
-    const scrollPos = window.scrollY + 120;
-    sections.forEach(section => {
-      const top = section.offsetTop;
-      const height = section.offsetHeight;
-      const id = section.getAttribute('id');
-      if (scrollPos >= top && scrollPos < top + height) {
-        navLinks.forEach(link => {
-          link.classList.remove('active');
-          if (link.getAttribute('href') === '#' + id) {
-            link.classList.add('active');
-          }
-        });
-      }
-    });
-  }
-  window.addEventListener('scroll', highlightNavLink, { passive: true });
-
-  // ─── Hamburger Menu Toggle ────────────────────────
-  const hamburger = document.getElementById('navHamburger');
-  const navMenu = document.getElementById('navMenu');
-
-  hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('open');
-    navMenu.classList.toggle('open');
-    document.body.style.overflow = navMenu.classList.contains('open') ? 'hidden' : '';
-  });
-
-  // Close menu on link click
-  navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      hamburger.classList.remove('open');
-      navMenu.classList.remove('open');
-      document.body.style.overflow = '';
-    });
-  });
-
-  // Close menu on outside click
-  document.addEventListener('click', (e) => {
-    if (navMenu.classList.contains('open') &&
-        !navMenu.contains(e.target) &&
-        !hamburger.contains(e.target)) {
-      hamburger.classList.remove('open');
-      navMenu.classList.remove('open');
-      document.body.style.overflow = '';
-    }
-  });
-
-  // ─── Scroll-Triggered Animations ──────────────────
-  const animateElements = document.querySelectorAll('.animate-on-scroll');
-
-  const scrollObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        scrollObserver.unobserve(entry.target);
-      }
-    });
-  }, {
-    threshold: 0.12,
-    rootMargin: '0px 0px -40px 0px'
-  });
-
-  animateElements.forEach(el => scrollObserver.observe(el));
-
-  // ─── Portfolio Filter ─────────────────────────────
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const portfolioItems = document.querySelectorAll('.portfolio-item');
-
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      const filter = btn.dataset.filter;
-
-      portfolioItems.forEach(item => {
-        if (filter === 'all' || item.dataset.category === filter) {
-          item.classList.remove('hidden');
-          item.style.animation = 'fadeIn 0.4s ease forwards';
-        } else {
-          item.classList.add('hidden');
-        }
-      });
-    });
-  });
-
-  // ─── Portfolio Lightbox ───────────────────────────
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightboxImg');
-  const lightboxCaption = document.getElementById('lightboxCaption');
-  const lightboxClose = document.getElementById('lightboxClose');
-  const lightboxPrev = document.getElementById('lightboxPrev');
-  const lightboxNext = document.getElementById('lightboxNext');
-  let currentLightboxIndex = 0;
-
-  function getVisiblePortfolioItems() {
-    return [...document.querySelectorAll('.portfolio-item:not(.hidden)')];
-  }
-
-  function openLightbox(index) {
-    const items = getVisiblePortfolioItems();
-    if (index < 0 || index >= items.length) return;
-    currentLightboxIndex = index;
-
-    const item = items[index];
-    const img = item.querySelector('img');
-    const caption = item.querySelector('h4');
-
-    if (img) {
-      lightboxImg.src = img.src;
-      lightboxImg.alt = img.alt;
-    }
-    lightboxCaption.textContent = caption ? caption.textContent : '';
-    lightbox.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeLightbox() {
-    lightbox.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-
-  function navigateLightbox(direction) {
-    const items = getVisiblePortfolioItems();
-    currentLightboxIndex = (currentLightboxIndex + direction + items.length) % items.length;
-    openLightbox(currentLightboxIndex);
-  }
-
-  portfolioItems.forEach((item, index) => {
-    item.addEventListener('click', () => {
-      const visibleItems = getVisiblePortfolioItems();
-      const visibleIndex = visibleItems.indexOf(item);
-      openLightbox(visibleIndex >= 0 ? visibleIndex : 0);
-    });
-  });
-
-  lightboxClose.addEventListener('click', closeLightbox);
-  lightboxPrev.addEventListener('click', () => navigateLightbox(-1));
-  lightboxNext.addEventListener('click', () => navigateLightbox(1));
-
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) closeLightbox();
-  });
-
-  // Keyboard navigation
-  document.addEventListener('keydown', (e) => {
-    if (!lightbox.classList.contains('active')) return;
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') navigateLightbox(-1);
-    if (e.key === 'ArrowRight') navigateLightbox(1);
-  });
-
-  // ─── Star Rating Picker ───────────────────────────
-  const starRating = document.getElementById('starRating');
-  const ratingInput = document.getElementById('reviewRating');
-  const stars = starRating.querySelectorAll('.star');
-  let selectedRating = 0;
-
-  stars.forEach(star => {
-    star.addEventListener('mouseenter', () => {
-      const rating = parseInt(star.dataset.rating);
-      highlightStars(rating);
-    });
-
-    star.addEventListener('click', () => {
-      selectedRating = parseInt(star.dataset.rating);
-      ratingInput.value = selectedRating;
-      highlightStars(selectedRating);
-    });
-  });
-
-  starRating.addEventListener('mouseleave', () => {
-    highlightStars(selectedRating);
-  });
-
-  function highlightStars(rating) {
-    stars.forEach(star => {
-      const starVal = parseInt(star.dataset.rating);
-      if (starVal <= rating) {
-        star.classList.add('active');
-      } else {
-        star.classList.remove('active');
-      }
-    });
-  }
-
-  // ─── Review Form Submission ───────────────────────
-  const reviewForm = document.getElementById('reviewForm');
-  const formMessage = document.getElementById('formMessage');
-  const submitBtn = document.getElementById('reviewSubmitBtn');
-
-  reviewForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById('reviewName').value.trim();
-    const rating = parseInt(ratingInput.value);
-    const message = document.getElementById('reviewMessage').value.trim();
-
-    // Validation
-    if (!name || !message) {
-      showFormMessage('Please fill in all fields.', 'error');
-      return;
-    }
-    if (rating < 1 || rating > 5) {
-      showFormMessage('Please select a star rating.', 'error');
-      return;
-    }
-
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span>Submitting...</span>';
-
-    try {
-      const response = await fetch('/api/reviews', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, rating, message })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        showFormMessage('Thank you! Your review has been submitted and will appear after approval. ✨', 'success');
-        reviewForm.reset();
-        selectedRating = 0;
-        ratingInput.value = 0;
-        highlightStars(0);
-      } else {
-        showFormMessage(data.error || 'Something went wrong. Please try again.', 'error');
-      }
-    } catch (err) {
-      showFormMessage('Network error. Please check your connection and try again.', 'error');
-    }
-
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '<span>Submit Review</span>';
-  });
-
-  function showFormMessage(text, type) {
-    formMessage.textContent = text;
-    formMessage.className = 'form-message ' + type;
-    setTimeout(() => {
-      formMessage.textContent = '';
-      formMessage.className = 'form-message';
-    }, 5000);
-  }
-
-  // ─── Load Approved Reviews ────────────────────────
-  const reviewsGrid = document.getElementById('reviewsGrid');
-
-  async function loadReviews() {
-    try {
-      const response = await fetch('/api/reviews');
-      const data = await response.json();
-
-      if (data.success && data.reviews.length > 0) {
-        reviewsGrid.innerHTML = data.reviews.map(review => `
-          <div class="review-card animate-on-scroll visible">
-            <div class="review-stars">
-              ${generateStars(review.rating)}
-            </div>
-            <p class="review-text">"${escapeHtml(review.message)}"</p>
-            <div class="review-author">${escapeHtml(review.name)}</div>
-            <div class="review-date">${formatDate(review.created_at)}</div>
-          </div>
-        `).join('');
-      } else {
-        reviewsGrid.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon">💬</div>
-            <p>No reviews yet. Be the first to share your experience!</p>
-          </div>
-        `;
-      }
-    } catch (err) {
-      reviewsGrid.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">💬</div>
-          <p>No reviews yet. Be the first to share your experience!</p>
-        </div>
-      `;
-    }
-  }
-
-  function generateStars(rating) {
-    let html = '';
-    for (let i = 1; i <= 5; i++) {
-      html += i <= rating
-        ? '<span class="star-filled">★</span>'
-        : '<span class="star-empty">★</span>';
-    }
-    return html;
-  }
-
-  function formatDate(dateStr) {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  }
-
+  /* ─── Utility ─── */
+  function qs(selector, parent) { return (parent || document).querySelector(selector); }
+  function qsa(selector, parent) { return Array.from((parent || document).querySelectorAll(selector)); }
   function escapeHtml(text) {
     const el = document.createElement('span');
     el.textContent = text;
     return el.innerHTML;
   }
 
-  loadReviews();
+  /* ─── Smooth Scroll for Anchor Links ─── */
+  document.addEventListener('click', (e) => {
+    const anchor = e.target.closest('a[href^="#"]');
+    if (!anchor) return;
+    const targetId = anchor.getAttribute('href');
+    if (targetId === '#') return;
+    const targetEl = document.querySelector(targetId);
+    if (targetEl) {
+      e.preventDefault();
+      const navbarHeight = qs('#navbar')?.offsetHeight || 70;
+      const top = targetEl.getBoundingClientRect().top + window.scrollY - navbarHeight;
+      window.scrollTo({ top, behavior: 'smooth' });
 
-  // ─── Instagram Gallery (Static Placeholders) ─────
-  const instagramGrid = document.getElementById('instagramGrid');
-
-  const instagramPosts = [
-    {
-      image: '/images/insta-1.webp',
-      link: 'https://instagram.com/njsareedrapist',
-      alt: 'Bridal saree draping showcase'
-    },
-    {
-      image: '/images/insta-2.webp',
-      link: 'https://instagram.com/njsareedrapist',
-      alt: 'Lehenga styling session'
-    },
-    {
-      image: '/images/insta-3.webp',
-      link: 'https://instagram.com/njsareedrapist',
-      alt: 'Pre-pleated saree ready to wear'
-    },
-    {
-      image: '/images/insta-4.webp',
-      link: 'https://instagram.com/njsareedrapist',
-      alt: 'Wedding event styling'
-    },
-    {
-      image: '/images/insta-5.webp',
-      link: 'https://instagram.com/njsareedrapist',
-      alt: 'Bridal preparation moment'
-    },
-    {
-      image: '/images/insta-6.webp',
-      link: 'https://instagram.com/njsareedrapist',
-      alt: 'Reception saree look'
-    },
-    {
-      image: '/images/insta-7.webp',
-      link: 'https://instagram.com/njsareedrapist',
-      alt: 'Traditional draping art'
-    },
-    {
-      image: '/images/insta-8.webp',
-      link: 'https://instagram.com/njsareedrapist',
-      alt: 'Engagement ceremony styling'
-    }
-  ];
-
-  // Render Instagram grid with gradient placeholders when no real images exist
-  const instaColors = [
-    'linear-gradient(135deg, #C9A227 0%, #8B6914 100%)',
-    'linear-gradient(135deg, #1A1A1A 0%, #3D2A10 100%)',
-    'linear-gradient(135deg, #E2C561 0%, #C9A227 100%)',
-    'linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #F77737 100%)',
-    'linear-gradient(135deg, #F6E6E6 0%, #C9A227 100%)',
-    'linear-gradient(135deg, #2D1F0E 0%, #C9A227 100%)',
-    'linear-gradient(135deg, #C9A227 0%, #F6E6E6 100%)',
-    'linear-gradient(135deg, #A68518 0%, #E2C561 100%)'
-  ];
-
-  const instaLabels = [
-    '✨ Bridal Saree', '👗 Lehenga Style', '🪡 Pre-Pleated',
-    '🎉 Event Look', '💍 Bridal Prep', '🌸 Reception',
-    '🧵 Traditional', '💫 Engagement'
-  ];
-
-  instagramGrid.innerHTML = instagramPosts.map((post, i) => `
-    <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="insta-item" title="View on Instagram">
-      <div style="width:100%;height:100%;background:${instaColors[i]};display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:0.85rem;color:rgba(255,255,255,0.8);text-align:center;padding:16px;">
-        ${instaLabels[i]}
-      </div>
-      <div class="insta-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-      </div>
-    </a>
-  `).join('');
-
-  // ─── Smooth Scroll for all anchor links ───────────
-  document.querySelectorAll('a[href^="#"]').forEach(link => {
-    link.addEventListener('click', (e) => {
-      const href = link.getAttribute('href');
-      if (href === '#') return;
-      const target = document.querySelector(href);
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Close mobile menu if open
+      const hamburger = qs('#navHamburger');
+      const navMenu = qs('#navMenu');
+      if (hamburger && navMenu) {
+        hamburger.classList.remove('open');
+        navMenu.classList.remove('mobile-open');
       }
-    });
+    }
   });
 
-});
+  /* ─── Active Nav Highlight on Scroll (Home page) ─── */
+  const isHome = window.location.pathname === '/' || window.location.pathname === '/home.html';
+  if (isHome) {
+    const sections = qsa('section[id]');
+    const navLinks = qsa('.nav-link');
+
+    function updateActiveNav() {
+      const scrollY = window.scrollY + 120;
+      let current = '';
+      sections.forEach(section => {
+        if (section.offsetTop <= scrollY) {
+          current = section.getAttribute('id');
+        }
+      });
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        const href = link.getAttribute('href');
+        if (href === `#${current}` || (current === 'home' && href === '#home')) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', updateActiveNav, { passive: true });
+    updateActiveNav();
+  }
+
+  /* ─── Sticky Navbar ─── */
+  const navbar = qs('#navbar');
+  if (navbar) {
+    if (!isHome) {
+      navbar.classList.add('scrolled');
+    }
+    window.addEventListener('scroll', () => {
+      if (isHome) {
+        navbar.classList.toggle('scrolled', window.scrollY > 40);
+      }
+    }, { passive: true });
+
+    // Hamburger
+    const hamburger = qs('#navHamburger');
+    const navMenu = qs('#navMenu');
+    if (hamburger && navMenu) {
+      hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('open');
+        navMenu.classList.toggle('mobile-open');
+      });
+      // Close on link click
+      qsa('.nav-link', navMenu).forEach(link => {
+        link.addEventListener('click', () => {
+          hamburger.classList.remove('open');
+          navMenu.classList.remove('mobile-open');
+        });
+      });
+    }
+  }
+
+  /* ─── Scroll Animations ─── */
+  const animatedEls = qsa('.animate-on-scroll');
+  if (animatedEls.length && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    animatedEls.forEach(el => observer.observe(el));
+  } else {
+    animatedEls.forEach(el => el.classList.add('visible'));
+  }
+
+  /* ─── Portfolio Filter & Lightbox ─── */
+  const portfolioGrid = qs('#portfolioGrid');
+  if (portfolioGrid) {
+    // Filter buttons
+    qsa('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        qsa('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        qsa('.portfolio-item').forEach(item => {
+          item.classList.toggle('hidden', filter !== 'all' && item.dataset.category !== filter);
+        });
+      });
+    });
+
+    const formatCategory = (cat) => {
+        const map = { 'bridal-saree': 'Bridal Saree', 'lehenga': 'Lehenga', 'pre-pleated': 'Pre-Pleated', 'event': 'Event' };
+        return map[cat] || cat;
+    };
+
+    // Load portfolio images dynamically
+    async function loadPortfolioGallery() {
+        try {
+            const res = await fetch('/api/portfolio');
+            const data = await res.json();
+            
+            if (!data.success || !data.images.length) {
+                portfolioGrid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-light);">Portfolio coming soon.</div>';
+                return;
+            }
+
+            portfolioGrid.innerHTML = data.images.map(img => `
+                <div class="portfolio-item animate-on-scroll" data-category="${img.category}">
+                    <div class="portfolio-img-wrap">
+                        <img src="${escapeHtml(img.url)}" alt="${escapeHtml(img.caption || 'Portfolio image')}" loading="lazy">
+                        <div class="portfolio-overlay">
+                            <span class="portfolio-category">${escapeHtml(formatCategory(img.category))}</span>
+                            <h4>${escapeHtml(img.caption || '')}</h4>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Trigger scroll observer for new elements
+            qsa('.animate-on-scroll', portfolioGrid).forEach(el => {
+                new IntersectionObserver((entries, obs) => {
+                    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+                }, { threshold: 0.1 }).observe(el);
+            });
+            
+            // Re-apply current filter if any
+            const activeFilterBtn = qs('.filter-btn.active');
+            if (activeFilterBtn) activeFilterBtn.click();
+            
+        } catch (err) {
+            console.error('Failed to load portfolio', err);
+            portfolioGrid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-light);">Failed to load portfolio.</div>';
+        }
+    }
+    
+    loadPortfolioGallery();
+
+    // Lightbox
+    const lightbox = qs('#lightbox');
+    const lightboxImg = qs('#lightboxImg');
+    const lightboxCaption = qs('#lightboxCaption');
+    let currentIndex = 0;
+    let portfolioImages = [];
+
+    if (lightbox) {
+      function buildPortfolioImages() {
+        return qsa('.portfolio-item:not(.hidden) .portfolio-img-wrap').map(wrap => ({
+          src: wrap.querySelector('img').src,
+          alt: wrap.querySelector('img').alt,
+          caption: wrap.querySelector('h4')?.textContent || ''
+        }));
+      }
+
+      function openLightbox(index) {
+        portfolioImages = buildPortfolioImages();
+        if (!portfolioImages.length) return;
+        currentIndex = Math.max(0, Math.min(index, portfolioImages.length - 1));
+        lightboxImg.src = portfolioImages[currentIndex].src;
+        lightboxImg.alt = portfolioImages[currentIndex].alt;
+        lightboxCaption.textContent = portfolioImages[currentIndex].caption;
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove('active');
+        lightboxImg.src = '';
+        document.body.style.overflow = '';
+      }
+
+      function navigate(dir) {
+        currentIndex = (currentIndex + dir + portfolioImages.length) % portfolioImages.length;
+        lightboxImg.src = portfolioImages[currentIndex].src;
+        lightboxImg.alt = portfolioImages[currentIndex].alt;
+        lightboxCaption.textContent = portfolioImages[currentIndex].caption;
+      }
+
+      portfolioGrid.addEventListener('click', e => {
+        const item = e.target.closest('.portfolio-item');
+        if (!item) return;
+        const visible = qsa('.portfolio-item:not(.hidden)');
+        const idx = visible.indexOf(item);
+        if (idx >= 0) openLightbox(idx);
+      });
+
+      qs('#lightboxClose')?.addEventListener('click', closeLightbox);
+      qs('#lightboxPrev')?.addEventListener('click', () => navigate(-1));
+      qs('#lightboxNext')?.addEventListener('click', () => navigate(1));
+      lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+      document.addEventListener('keydown', e => {
+        if (!lightbox.classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') navigate(-1);
+        if (e.key === 'ArrowRight') navigate(1);
+      });
+    }
+  }
+
+  /* ─── Bridal Saree Draping Gallery ─── */
+  const bridalGrid = qs('#bridalGalleryGrid');
+  if (bridalGrid) {
+    const loadingEl = qs('#bridalGalleryLoading');
+    const emptyEl = qs('#bridalGalleryEmpty');
+
+    async function loadBridalGallery() {
+      try {
+        const res = await fetch('/api/portfolio?category=bridal-saree');
+        const data = await res.json();
+        if (loadingEl) loadingEl.remove();
+
+        if (!data.success || !data.images.length) {
+          if (emptyEl) emptyEl.style.display = 'block';
+          return;
+        }
+
+        // Lightbox images for bridal page
+        const bridalImages = data.images;
+
+        data.images.forEach((img, idx) => {
+          const item = document.createElement('div');
+          item.className = 'bridal-gallery-item animate-on-scroll';
+          item.innerHTML = `
+            <img src="${escapeHtml(img.url)}" alt="${escapeHtml(img.caption || 'Bridal saree draping')}" loading="lazy">
+            <div class="bridal-gallery-item-overlay">
+              <span class="bridal-gallery-item-caption">${escapeHtml(img.caption || '')}</span>
+            </div>
+          `;
+          item.addEventListener('click', () => openBridalLightbox(idx, bridalImages));
+          bridalGrid.appendChild(item);
+        });
+
+        // Trigger scroll observer for new elements
+        qsa('.animate-on-scroll').forEach(el => {
+          if (!el.classList.contains('visible')) {
+            new IntersectionObserver((entries, obs) => {
+              entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+            }, { threshold: 0.1 }).observe(el);
+          }
+        });
+      } catch (err) {
+        console.error('Failed to load bridal gallery', err);
+        if (loadingEl) loadingEl.remove();
+        if (emptyEl) emptyEl.style.display = 'block';
+      }
+    }
+
+    const lightbox = qs('#lightbox');
+    const lightboxImg = qs('#lightboxImg');
+    const lightboxCaption = qs('#lightboxCaption');
+    let bridalCurrentIndex = 0;
+    let bridalImages = [];
+
+    function openBridalLightbox(index, images) {
+      bridalImages = images;
+      bridalCurrentIndex = index;
+      lightboxImg.src = bridalImages[bridalCurrentIndex].url;
+      lightboxImg.alt = bridalImages[bridalCurrentIndex].caption || 'Bridal image';
+      lightboxCaption.textContent = bridalImages[bridalCurrentIndex].caption || '';
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeBridalLightbox() {
+      lightbox.classList.remove('active');
+      lightboxImg.src = '';
+      document.body.style.overflow = '';
+    }
+
+    function navigateBridal(dir) {
+      bridalCurrentIndex = (bridalCurrentIndex + dir + bridalImages.length) % bridalImages.length;
+      lightboxImg.src = bridalImages[bridalCurrentIndex].url;
+      lightboxCaption.textContent = bridalImages[bridalCurrentIndex].caption || '';
+    }
+
+    if (lightbox) {
+      qs('#lightboxClose')?.addEventListener('click', closeBridalLightbox);
+      qs('#lightboxPrev')?.addEventListener('click', () => navigateBridal(-1));
+      qs('#lightboxNext')?.addEventListener('click', () => navigateBridal(1));
+      lightbox.addEventListener('click', e => { if (e.target === lightbox) closeBridalLightbox(); });
+      document.addEventListener('keydown', e => {
+        if (!lightbox.classList.contains('active')) return;
+        if (e.key === 'Escape') closeBridalLightbox();
+        if (e.key === 'ArrowLeft') navigateBridal(-1);
+        if (e.key === 'ArrowRight') navigateBridal(1);
+      });
+    }
+
+    loadBridalGallery();
+  }
+
+  /* ─── Instagram Grid (shimmer tiles linking to profile) ─── */
+  const instagramGrid = qs('#instagramGrid');
+  if (instagramGrid) {
+    const colors = [
+      'rgba(201,162,39,0.08)', 'rgba(201,162,39,0.12)',
+      'rgba(246,230,230,0.5)', 'rgba(240,235,225,0.6)',
+      'rgba(201,162,39,0.06)', 'rgba(250,247,242,0.8)',
+      'rgba(201,162,39,0.10)', 'rgba(246,230,230,0.4)',
+    ];
+    for (let i = 0; i < 8; i++) {
+      const a = document.createElement('a');
+      a.href = 'https://instagram.com/njsareedrapist';
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.className = 'insta-item';
+      a.setAttribute('aria-label', 'View Instagram post');
+      a.innerHTML = `
+        <div style="width:100%;height:100%;background:${colors[i]};background-size:200% 100%;animation:shimmer ${1.5 + i * 0.15}s ease-in-out infinite;border-radius:inherit;display:flex;align-items:center;justify-content:center;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="rgba(201,162,39,0.3)"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        </div>
+        <div class="insta-overlay" style="display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.75rem;letter-spacing:0.5px;">View on Instagram</div>
+      `;
+      instagramGrid.appendChild(a);
+    }
+  }
+
+  /* ─── Reviews ─── */
+  const reviewsGrid = qs('#reviewsGrid');
+  if (reviewsGrid) {
+    async function loadReviews() {
+      try {
+        const res = await fetch('/api/reviews');
+        const data = await res.json();
+        if (!data.success || !data.reviews.length) {
+          reviewsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px 24px;color:var(--text-light);">No reviews yet. Be the first to share your experience!</div>';
+          return;
+        }
+        reviewsGrid.innerHTML = data.reviews.map(r => `
+          <div class="review-card animate-on-scroll">
+            <div class="review-header">
+              <div class="review-avatar">${escapeHtml(r.name.charAt(0).toUpperCase())}</div>
+              <div>
+                <div class="review-author">${escapeHtml(r.name)}</div>
+                <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+              </div>
+            </div>
+            <p class="review-text">"${escapeHtml(r.message)}"</p>
+            <div class="review-date">${new Date(r.created_at).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })}</div>
+          </div>
+        `).join('');
+
+        // Re-trigger scroll observer
+        qsa('.review-card.animate-on-scroll').forEach(el => {
+          new IntersectionObserver((entries, obs) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+          }, { threshold: 0.1 }).observe(el);
+        });
+      } catch { reviewsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--text-light);">Failed to load reviews. Please try again.</div>'; }
+    }
+    loadReviews();
+  }
+
+  /* ─── Review Form ─── */
+  const reviewForm = qs('#reviewForm');
+  if (reviewForm) {
+    let selectedRating = 0;
+    const stars = qsa('.star', qs('#starRating'));
+    const ratingInput = qs('#reviewRating');
+
+    stars.forEach(star => {
+      star.addEventListener('mouseover', () => {
+        const r = parseInt(star.dataset.rating);
+        stars.forEach((s, i) => s.classList.toggle('active', i < r));
+      });
+      star.addEventListener('mouseout', () => {
+        stars.forEach((s, i) => s.classList.toggle('active', i < selectedRating));
+      });
+      star.addEventListener('click', () => {
+        selectedRating = parseInt(star.dataset.rating);
+        ratingInput.value = selectedRating;
+        stars.forEach((s, i) => s.classList.toggle('active', i < selectedRating));
+      });
+    });
+
+    reviewForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = qs('#reviewName').value.trim();
+      const rating = parseInt(ratingInput.value);
+      const message = qs('#reviewMessage').value.trim();
+      const msgEl = qs('#formMessage');
+      const btn = qs('#reviewSubmitBtn');
+
+      if (!name || !rating || !message) {
+        msgEl.textContent = 'Please fill in all fields and select a rating.';
+        msgEl.className = 'form-message error';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'Submitting...';
+      msgEl.textContent = '';
+      msgEl.className = 'form-message';
+
+      try {
+        const res = await fetch('/api/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, rating, message })
+        });
+        const data = await res.json();
+        if (data.success) {
+          msgEl.textContent = '✓ ' + data.message;
+          msgEl.className = 'form-message success';
+          reviewForm.reset();
+          selectedRating = 0;
+          ratingInput.value = 0;
+          stars.forEach(s => s.classList.remove('active'));
+        } else {
+          msgEl.textContent = data.error || 'Submission failed. Please try again.';
+          msgEl.className = 'form-message error';
+        }
+      } catch {
+        msgEl.textContent = 'Network error. Please try again.';
+        msgEl.className = 'form-message error';
+      } finally {
+        btn.disabled = false;
+        btn.querySelector('span').textContent = 'Submit Review';
+      }
+    });
+  }
+
+})();

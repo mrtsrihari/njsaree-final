@@ -1300,6 +1300,10 @@ a {
   .nav-hamburger {
     display: flex;
   }
+  
+  .silk-wave-divider svg {
+    height: 40px;
+  }
 
   .nav-menu {
     position: fixed;
@@ -1328,6 +1332,40 @@ a {
   }
 
   /* Hero */
+  .hero {
+    min-height: 75vh;
+    padding-top: 80px;
+    padding-bottom: 40px;
+    justify-content: center;
+  }
+  
+  .hero-bg {
+    background: url('/images/portfolio-1.webp') center 20% / cover no-repeat;
+  }
+
+  .hero-animated-bg {
+    display: none;
+  }
+  
+  .hero-video-overlay {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(26,26,26,0.8) 100%);
+  }
+  
+  .hero-cta-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .hero-cta,
+  .hero-cta-outline {
+    width: 100%;
+    max-width: 260px;
+    justify-content: center;
+  }
+  
   .hero-services {
     flex-direction: column;
     gap: 8px;

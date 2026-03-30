@@ -103,4 +103,10 @@ router.delete('/reviews/:id', (req, res) => {
     }
 });
 
+// Expose token validator for use by other routes
+function isValidToken(token) {
+    return activeTokens.has(token);
+}
+
 module.exports = router;
+module.exports.isValidToken = isValidToken;

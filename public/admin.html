@@ -494,9 +494,7 @@
           headers: { 'Authorization': 'Bearer ' + token }
         });
         if (res.ok) {
-          loginScreen.classList.add('hidden');
-          dashboard.classList.add('active');
-          loadDashboard();
+          window.location.href = '/admin-dashboard';
         } else {
           sessionStorage.removeItem(TOKEN_KEY);
         }
@@ -524,9 +522,7 @@
 
         if (res.ok && data.success) {
           sessionStorage.setItem(TOKEN_KEY, data.token);
-          loginScreen.classList.add('hidden');
-          dashboard.classList.add('active');
-          loadDashboard();
+          window.location.href = '/admin-dashboard';
         } else {
           loginError.textContent = 'Invalid credentials. Please try again.';
         }
