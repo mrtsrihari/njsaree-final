@@ -75,3 +75,11 @@ if (!process.env.VERCEL) {
 
 // Export the Express API
 module.exports = app;
+
+// Vercel serverless configuration: disable default body parser
+// to allow Multer to handle multipart/form-data streams (Cloudinary uploads).
+module.exports.config = {
+    api: {
+        bodyParser: false,
+    },
+};
