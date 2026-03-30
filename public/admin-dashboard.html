@@ -170,29 +170,13 @@
 
   <!-- Tabs -->
   <div class="dash-tabs">
-    <button class="dash-tab active" data-tab="reviews">Reviews</button>
-    <button class="dash-tab" data-tab="images">Bridal Gallery Images</button>
+    <button class="dash-tab active" data-tab="images">Bridal Gallery Images</button>
   </div>
 
   <div class="dash-body">
 
-    <!-- ── Tab: Reviews ── -->
-    <div class="tab-panel active" id="tab-reviews">
-      <div class="dash-stats">
-        <div class="stat-card"><div class="stat-number" id="statPending">0</div><div class="stat-label">Pending Reviews</div></div>
-        <div class="stat-card"><div class="stat-number" id="statApproved">0</div><div class="stat-label">Approved</div></div>
-        <div class="stat-card"><div class="stat-number" id="statTotal">0</div><div class="stat-label">Total</div></div>
-      </div>
-
-      <div class="dash-section-title">Pending Reviews <span class="badge" id="pendingBadge">0</span></div>
-      <div class="review-list" id="pendingList"></div>
-
-      <div class="dash-section-title">All Reviews</div>
-      <div class="review-list" id="allReviewsList"></div>
-    </div>
-
     <!-- ── Tab: Images ── -->
-    <div class="tab-panel" id="tab-images">
+    <div class="tab-panel active" id="tab-images">
       <div class="upload-section">
         <h3 class="upload-title">Upload Portfolio Image</h3>
         <form id="uploadForm" class="upload-form">
@@ -248,9 +232,9 @@
       const token = getToken();
       if (!token) { window.location.href = '/admin'; return; }
       try {
-        const res = await fetch('/api/admin/reviews', { headers: { 'Authorization': 'Bearer ' + token } });
+        const res = await fetch('/api/portfolio');
         if (!res.ok) { sessionStorage.removeItem(TOKEN_KEY); window.location.href = '/admin'; }
-        else { loadReviews(); loadImages(); }
+        else { loadImages(); }
       } catch { window.location.href = '/admin'; }
     })();
 
@@ -294,60 +278,6 @@
       window.location.href = '/admin';
     });
 
-    // ─── Reviews ───
-    async function loadReviews() {
-      try {
-        const res = await fetch('/api/admin/reviews', { headers: authHeaders() });
-        const data = await res.json();
-        if (!data.success) return;
-        const reviews = data.reviews;
-        const pending = reviews.filter(r => !r.approved);
-        const approved = reviews.filter(r => r.approved);
-        document.getElementById('statPending').textContent = pending.length;
-        document.getElementById('statApproved').textContent = approved.length;
-        document.getElementById('statTotal').textContent = reviews.length;
-        document.getElementById('pendingBadge').textContent = pending.length;
-        renderReviews('pendingList', pending, true);
-        renderReviews('allReviewsList', reviews, false);
-      } catch { showToast('Failed to load reviews', 'error'); }
-    }
-
-    function renderReviews(containerId, reviews, showApprove) {
-      const container = document.getElementById(containerId);
-      if (!reviews.length) { container.innerHTML = '<div class="empty-msg">No reviews to display.</div>'; return; }
-      container.innerHTML = reviews.map(r => `
-        <div class="admin-review-card" id="review-${r.id}">
-          <div class="review-info">
-            <div class="review-meta">
-              <span class="review-name">${escapeHtml(r.name)}</span>
-              <span class="review-stars-display">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
-              <span class="review-status ${r.approved ? 'status-approved' : 'status-pending'}">${r.approved ? 'Approved' : 'Pending'}</span>
-            </div>
-            <p class="review-msg">"${escapeHtml(r.message)}"</p>
-            <div class="review-date">${new Date(r.created_at).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })}</div>
-          </div>
-          <div class="review-actions">
-            ${!r.approved ? `<button class="btn-action btn-approve" onclick="approveReview(${r.id})">✓ Approve</button>` : ''}
-            <button class="btn-action btn-delete" onclick="deleteReview(${r.id})">✕ Delete</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    async function approveReview(id) {
-      const res = await fetch(`/api/admin/reviews/${id}/approve`, { method: 'POST', headers: authHeaders() });
-      const data = await res.json();
-      if (data.success) { showToast('Review approved ✓', 'success'); loadReviews(); }
-      else showToast('Failed to approve', 'error');
-    }
-
-    async function deleteReview(id) {
-      if (!confirm('Delete this review?')) return;
-      const res = await fetch(`/api/admin/reviews/${id}`, { method: 'DELETE', headers: authHeaders() });
-      const data = await res.json();
-      if (data.success) { showToast('Review deleted', 'success'); loadReviews(); }
-      else showToast('Failed to delete', 'error');
-    }
 
     // ─── Images ───
     async function loadImages() {
