@@ -35,15 +35,20 @@
     <div class="page-hero-bg"></div>
     <div class="page-hero-content">
       <span class="section-tag" style="color:var(--gold-light)">Our Work</span>
-      <h1 class="page-hero-title">Bridal Portfolio</h1>
-      <p class="page-hero-subtitle">A curated collection of our finest bridal draping artistry</p>
+      <h1 class="page-hero-title" id="portfolioPageTitle">Bridal Portfolio</h1>
+      <p class="page-hero-subtitle" id="portfolioPageSubtitle">A curated collection of our finest bridal draping artistry</p>
     </div>
   </section>
 
   <section class="portfolio-section" style="padding-top: 80px;">
     <div class="container">
 
-      <div class="portfolio-filters animate-on-scroll">
+      <!-- Back to categories link (shown when filtered) -->
+      <div class="portfolio-back-link animate-on-scroll" id="portfolioBackLink" style="display:none;">
+        <a href="/#portfolio" class="btn-back-categories">← Back to All Categories</a>
+      </div>
+
+      <div class="portfolio-filters animate-on-scroll" id="portfolioFilters">
         <button class="filter-btn active" data-filter="all">All</button>
         <button class="filter-btn" data-filter="bridal-saree">Bridal Saree</button>
         <button class="filter-btn" data-filter="lehenga">Lehenga</button>
@@ -58,7 +63,6 @@
 
       <div class="section-cta animate-on-scroll" style="margin-top:60px;">
         <a href="/#contact" class="btn-gold">Book a Session</a>
-        <a href="/instagram" class="btn-gold-outline" style="margin-left:16px;">View Instagram Gallery →</a>
       </div>
     </div>
   </section>

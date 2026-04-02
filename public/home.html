@@ -104,31 +104,57 @@
         <p class="section-subtitle">A curated collection of our finest bridal draping artistry</p>
       </div>
 
-      <div class="portfolio-filters animate-on-scroll">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="bridal-saree">Bridal Saree</button>
-        <button class="filter-btn" data-filter="lehenga">Lehenga</button>
-        <button class="filter-btn" data-filter="pre-pleated">Pre-Pleated</button>
-        <button class="filter-btn" data-filter="event">Event</button>
-      </div>
+      <div class="category-cards-grid animate-on-scroll" id="categoryCardsGrid">
+        <a href="/portfolio?category=bridal-saree" class="category-card" id="categoryBridalSaree">
+          <div class="category-card-img-wrap">
+            <img src="/images/category-bridal-saree.png" alt="Bridal Saree Draping" loading="lazy">
+            <div class="category-card-overlay">
+              <span class="category-card-icon">✦</span>
+              <h3 class="category-card-title">Bridal Saree</h3>
+              <p class="category-card-desc">Elegant bridal saree draping artistry</p>
+              <span class="category-card-cta">View Collection →</span>
+            </div>
+          </div>
+        </a>
 
-      <div class="portfolio-grid" id="portfolioGrid">
-        <!-- Images will be loaded dynamically here via app.js -->
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-light);">Loading Works...</div>
+        <a href="/portfolio?category=lehenga" class="category-card" id="categoryLehenga">
+          <div class="category-card-img-wrap">
+            <img src="/images/category-lehenga.png" alt="Lehenga Draping" loading="lazy">
+            <div class="category-card-overlay">
+              <span class="category-card-icon">✦</span>
+              <h3 class="category-card-title">Lehenga</h3>
+              <p class="category-card-desc">Stunning lehenga draping & styling</p>
+              <span class="category-card-cta">View Collection →</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="/portfolio?category=pre-pleated" class="category-card" id="categoryPrePleated">
+          <div class="category-card-img-wrap">
+            <img src="/images/category-pre-pleated.png" alt="Pre-Pleated Saree" loading="lazy">
+            <div class="category-card-overlay">
+              <span class="category-card-icon">✦</span>
+              <h3 class="category-card-title">Pre-Pleated</h3>
+              <p class="category-card-desc">Ready-to-wear pre-pleated sarees</p>
+              <span class="category-card-cta">View Collection →</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="/portfolio?category=event" class="category-card" id="categoryEvent">
+          <div class="category-card-img-wrap">
+            <img src="/images/category-event.png" alt="Event Styling" loading="lazy">
+            <div class="category-card-overlay">
+              <span class="category-card-icon">✦</span>
+              <h3 class="category-card-title">Event</h3>
+              <p class="category-card-desc">Special occasion draping & styling</p>
+              <span class="category-card-cta">View Collection →</span>
+            </div>
+          </div>
+        </a>
       </div>
     </div>
   </section>
-
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox">
-    <button class="lightbox-close" id="lightboxClose" aria-label="Close lightbox">&times;</button>
-    <button class="lightbox-prev" id="lightboxPrev" aria-label="Previous image">&#8249;</button>
-    <button class="lightbox-next" id="lightboxNext" aria-label="Next image">&#8250;</button>
-    <div class="lightbox-content">
-      <img id="lightboxImg" src="" alt="Portfolio image">
-      <div class="lightbox-caption" id="lightboxCaption"></div>
-    </div>
-  </div>
 
   <!-- ═══════════════════ CONTACT SECTION ═══════════════════ -->
   <section class="contact-section home-contact-section" id="contact">

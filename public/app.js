@@ -116,6 +116,33 @@
   /* ─── Portfolio Filter & Lightbox ─── */
   const portfolioGrid = qs('#portfolioGrid');
   if (portfolioGrid) {
+    const formatCategory = (cat) => {
+        const map = { 'bridal-saree': 'Bridal Saree', 'lehenga': 'Lehenga', 'pre-pleated': 'Pre-Pleated', 'event': 'Event' };
+        return map[cat] || cat;
+    };
+
+    const categoryDescriptions = {
+      'bridal-saree': 'Our finest bridal saree draping artistry',
+      'lehenga': 'Stunning lehenga draping & styling collections',
+      'pre-pleated': 'Ready-to-wear pre-pleated saree designs',
+      'event': 'Special occasion draping & event styling'
+    };
+
+    // Read category from URL query param
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryFromUrl = urlParams.get('category');
+
+    // Update page hero title if category is specified
+    if (categoryFromUrl) {
+      const pageTitle = qs('#portfolioPageTitle');
+      const pageSubtitle = qs('#portfolioPageSubtitle');
+      const backLink = qs('#portfolioBackLink');
+
+      if (pageTitle) pageTitle.textContent = formatCategory(categoryFromUrl) + ' Collection';
+      if (pageSubtitle) pageSubtitle.textContent = categoryDescriptions[categoryFromUrl] || 'Browse our curated collection';
+      if (backLink) backLink.style.display = 'block';
+    }
+
     // Filter buttons
     qsa('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -125,13 +152,29 @@
         qsa('.portfolio-item').forEach(item => {
           item.classList.toggle('hidden', filter !== 'all' && item.dataset.category !== filter);
         });
+
+        // Update URL without reload
+        const newUrl = filter === 'all' 
+          ? window.location.pathname 
+          : window.location.pathname + '?category=' + filter;
+        window.history.replaceState({}, '', newUrl);
+
+        // Update title
+        const pageTitle = qs('#portfolioPageTitle');
+        const pageSubtitle = qs('#portfolioPageSubtitle');
+        const backLink = qs('#portfolioBackLink');
+
+        if (filter === 'all') {
+          if (pageTitle) pageTitle.textContent = 'Bridal Portfolio';
+          if (pageSubtitle) pageSubtitle.textContent = 'A curated collection of our finest bridal draping artistry';
+          if (backLink) backLink.style.display = 'none';
+        } else {
+          if (pageTitle) pageTitle.textContent = formatCategory(filter) + ' Collection';
+          if (pageSubtitle) pageSubtitle.textContent = categoryDescriptions[filter] || 'Browse our curated collection';
+          if (backLink) backLink.style.display = 'block';
+        }
       });
     });
-
-    const formatCategory = (cat) => {
-        const map = { 'bridal-saree': 'Bridal Saree', 'lehenga': 'Lehenga', 'pre-pleated': 'Pre-Pleated', 'event': 'Event' };
-        return map[cat] || cat;
-    };
 
     // Load portfolio images dynamically
     async function loadPortfolioGallery() {
@@ -163,9 +206,15 @@
                 }, { threshold: 0.1 }).observe(el);
             });
             
-            // Re-apply current filter if any
-            const activeFilterBtn = qs('.filter-btn.active');
-            if (activeFilterBtn) activeFilterBtn.click();
+            // Auto-apply category filter from URL if present
+            if (categoryFromUrl) {
+              const targetBtn = qs(`.filter-btn[data-filter="${categoryFromUrl}"]`);
+              if (targetBtn) targetBtn.click();
+            } else {
+              // Re-apply current filter if any
+              const activeFilterBtn = qs('.filter-btn.active');
+              if (activeFilterBtn) activeFilterBtn.click();
+            }
             
         } catch (err) {
             console.error('Failed to load portfolio', err);
