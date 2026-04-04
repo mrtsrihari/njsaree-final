@@ -988,8 +988,10 @@ a.service-card .service-link-badge {
 
 .footer-links {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px;
 }
 
 .footer-links a {
@@ -1076,10 +1078,10 @@ a.service-card .service-link-badge {
 
 @media (max-width: 768px) {
   .brand-intro-section { padding: 40px 0 60px; }
-  .page-hero { min-height: 280px; }
+  .page-hero { min-height: 50vh; }
   .bridal-gallery-grid { grid-template-columns: repeat(2, 1fr); }
   .services-grid { grid-template-columns: 1fr 1fr; }
-  .contact-grid { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; gap: 12px; }
   .reviews-grid { grid-template-columns: 1fr; }
   .insta-profile-card { flex-direction: column; text-align: center; }
   .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1299,3 +1301,75 @@ a.service-card .service-link-badge {
   transform: translateY(-2px);
 }
 
+
+/* --- Unified Contact Card --- */
+.contact-unified-card {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 48px;
+}
+
+.contact-unified-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.contact-unified-item {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(201,162,39,0.1);
+}
+
+.contact-unified-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.contact-unified-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--ivory), var(--blush));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(201,162,39,0.15);
+}
+
+.contact-unified-info {
+  text-align: left;
+}
+
+.contact-unified-info h3 {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 4px;
+}
+
+.contact-unified-info a,
+.contact-unified-info p {
+  font-size: 0.95rem;
+  color: var(--gold);
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.contact-unified-info a:hover {
+  filter: brightness(0.9);
+}
+
+@media (max-width: 768px) {
+  .contact-unified-card {
+    padding: 32px 24px;
+  }
+  .contact-unified-item {
+    gap: 16px;
+    padding-bottom: 20px;
+  }
+}
