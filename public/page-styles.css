@@ -5,17 +5,17 @@
 
 /* ─── Home Page Inline Sections ─── */
 .home-portfolio-section {
-  padding: 20px 0 60px;
+  padding: 20px 0 40px;
   background: var(--ivory);
 }
 
 .home-contact-section {
-  padding: 80px 0 60px;
+  padding: 60px 0 20px;
   background: linear-gradient(180deg, var(--blush) 0%, var(--ivory) 100%);
 }
 
 .home-reviews-section {
-  padding: 80px 0 100px;
+  padding: 20px 0 80px;
   background: var(--ivory);
 }
 
