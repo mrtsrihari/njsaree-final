@@ -404,5 +404,77 @@
   }
 
 
+  /* ─── Reviews Carousel ─── */
+  function initReviewsCarousel(trackId, dotsId, wrapId) {
+    const track = qs('#' + trackId);
+    const dotsContainer = qs('#' + dotsId);
+    const wrap = qs('#' + wrapId);
+    if (!track || !dotsContainer || !wrap) return;
+
+    const slides = Array.from(track.children);
+    const total = slides.length;
+    let current = 0;
+    let autoTimer = null;
+
+    // Build dots
+    slides.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Go to review ' + (i + 1));
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    });
+
+    function updateDots() {
+      qsa('.carousel-dot', dotsContainer).forEach((dot, i) => {
+        dot.classList.toggle('active', i === current);
+      });
+    }
+
+    function goTo(index) {
+      current = (index + total) % total;
+      track.style.transform = 'translateX(-' + (current * 100) + '%)';
+      updateDots();
+    }
+
+    function next() { goTo(current + 1); }
+    function prev() { goTo(current - 1); }
+
+    // Arrow buttons inside the wrap
+    const btnPrev = wrap.querySelector('.carousel-btn-prev');
+    const btnNext = wrap.querySelector('.carousel-btn-next');
+    if (btnPrev) btnPrev.addEventListener('click', () => { resetTimer(); prev(); });
+    if (btnNext) btnNext.addEventListener('click', () => { resetTimer(); next(); });
+
+    // Auto-play
+    function startTimer() {
+      autoTimer = setInterval(next, 4000);
+    }
+    function resetTimer() {
+      clearInterval(autoTimer);
+      startTimer();
+    }
+    startTimer();
+
+    // Pause on hover
+    wrap.addEventListener('mouseenter', () => clearInterval(autoTimer));
+    wrap.addEventListener('mouseleave', startTimer);
+
+    // Touch / swipe support
+    let touchStartX = 0;
+    wrap.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    wrap.addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) {
+        resetTimer();
+        diff > 0 ? next() : prev();
+      }
+    }, { passive: true });
+  }
+
+  // Init on home page
+  initReviewsCarousel('reviewsTrackHome', 'reviewsDotsHome', 'reviewsCarouselHome');
+  // Init on reviews page
+  initReviewsCarousel('reviewsTrackPage', 'reviewsDotsPage', 'reviewsCarouselPage');
 
 })();
