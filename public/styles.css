@@ -882,7 +882,13 @@ a {
   width: 100%;
   max-width: 780px;
   margin: 0 auto 48px;
-  overflow: hidden;
+  overflow: visible; /* Allow arrows outside */
+}
+
+.reviews-carousel-viewport {
+  width: 100%;
+  overflow: hidden; /* Contain the track */
+  border-radius: var(--radius-lg);
 }
 
 .reviews-carousel-track {
@@ -1559,9 +1565,6 @@ a {
     padding: 80px 0;
   }
 
-  .reviews-carousel-wrap {
-    overflow: visible;
-  }
 
   .carousel-btn-prev { left: -18px; }
   .carousel-btn-next { right: -18px; }
