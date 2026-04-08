@@ -7,6 +7,7 @@
 .home-portfolio-section {
   padding: 20px 0 40px;
   background: var(--ivory);
+  overflow: hidden;
 }
 
 .home-contact-section {
@@ -1073,7 +1074,7 @@ a.service-card .service-link-badge {
   .instagram-grid { grid-template-columns: repeat(2, 1fr); }
   .footer-content { grid-template-columns: 1fr 1fr; }
   .footer-social { justify-content: flex-start; }
-  .category-cards-grid { grid-template-columns: repeat(2, 1fr); }
+  .category-cards-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
 }
 
 @media (max-width: 768px) {
@@ -1086,9 +1087,9 @@ a.service-card .service-link-badge {
   .insta-profile-card { flex-direction: column; text-align: center; }
   .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
   .review-form-container { padding: 32px 24px; }
-  .category-cards-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  .category-card-title { font-size: 1.2rem; }
-  .category-card-desc { font-size: 0.75rem; }
+  .category-cards-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .category-card-title { font-size: 0.72rem; letter-spacing: 0.3px; }
+  .category-card-img-wrap { margin-bottom: 8px; }
   .nav-menu {
     position: fixed;
     top: 0;
@@ -1128,8 +1129,9 @@ a.service-card .service-link-badge {
   .instagram-grid { grid-template-columns: repeat(2, 1fr); }
   .portfolio-grid { grid-template-columns: 1fr; }
   .contact-cta-btns { flex-direction: column; align-items: center; }
-  .category-cards-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .category-card-img-wrap { aspect-ratio: 1/1; }
+  .category-cards-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .category-card-title { font-size: 0.65rem; letter-spacing: 0; }
+  .category-card-img-wrap { margin-bottom: 6px; }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1381,5 +1383,59 @@ a.service-card .service-link-badge {
   .contact-unified-item {
     gap: 16px;
     padding-bottom: 20px;
+  }
+}
+
+/* --- Category Circle Cards Responsive Overrides --- */
+/* MUST be declared LAST to override the base repeat(6,1fr) */
+
+@media (max-width: 1024px) {
+  .category-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .category-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .category-card-title {
+    font-size: 0.72rem;
+    letter-spacing: 0.3px;
+  }
+  .category-card-img-wrap {
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .category-card-title {
+    font-size: 0.62rem;
+    letter-spacing: 0;
+    margin-top: 4px;
+  }
+  .category-card-img-wrap {
+    margin-bottom: 6px;
+  }
+}
+
+/* Fix floating buttons overlapping category labels on mobile */
+@media (max-width: 480px) {
+  .floating-buttons {
+    right: 12px;
+    bottom: 16px;
+    gap: 8px;
+  }
+  .fab {
+    width: 44px;
+    height: 44px;
   }
 }
