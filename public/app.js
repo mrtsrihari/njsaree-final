@@ -117,15 +117,38 @@
   const portfolioGrid = qs('#portfolioGrid');
   if (portfolioGrid) {
     const formatCategory = (cat) => {
-        const map = { 'bridal-saree': 'Bridal Saree', 'lehenga': 'Lehenga', 'pre-pleated': 'Pre-Pleated', 'event': 'Event' };
+        const map = { 
+          'south-indian': 'South Indian', 
+          'madisar': 'Madisar', 
+          'bengali': 'Bengali', 
+          'gujarati': 'Gujarati', 
+          'kerala-mundu': 'Kerala Mundu', 
+          'half-saree': 'Half Saree', 
+          'nauvari': 'Nauvari', 
+          'dhoti': 'Dhoti Style', 
+          'fusion': 'Fusion', 
+          'pre-pleated': 'Pre-Pleated', 
+          'dupatta': 'Dupatta Draping', 
+          'groom-dhoti': "Groom's Dhoti",
+          'guest': 'Guest Draping' 
+        };
         return map[cat] || cat;
     };
 
     const categoryDescriptions = {
-      'bridal-saree': 'Our finest bridal saree draping artistry',
-      'lehenga': 'Stunning lehenga draping & styling collections',
-      'pre-pleated': 'Ready-to-wear pre-pleated saree designs',
-      'event': 'Special occasion draping & event styling'
+      'south-indian': 'Traditional and elegant drapes featuring Kanchipuram and Silk sarees',
+      'madisar': 'Authentic Brahmin style 9-yard saree draping for rituals and traditions',
+      'bengali': "The iconic 'Atpoure' drape with classic box pleats and a regal look",
+      'gujarati': 'Front pallu styles including Seedha Pallu and traditional Gadhwal',
+      'kerala-mundu': 'Graceful Kasavu Mundu Neriyathum drapes for a serene ethnic look',
+      'half-saree': 'Langa Voni and Dhavani styles for youthful and vibrant celebrations',
+      'nauvari': 'Traditional Maharashtrian 9-yard drape for a bold cultural statement',
+      'dhoti': 'Modern dhoti-style saree drapes for a trendy fusion appearance',
+      'fusion': 'Innovative and contemporary draping for modern brides and fashionistas',
+      'pre-pleated': 'Professional pre-pleating and box folding for a stress-free experience',
+      'dupatta': 'Creative dupatta and veil draping for Lehengas and festive wear',
+      'groom-dhoti': "Specialized dhoti and veshti draping for the elegant groom",
+      'guest': 'Elegant saree and lehenga styling for wedding guests and family members'
     };
 
     // Read category from URL query param
