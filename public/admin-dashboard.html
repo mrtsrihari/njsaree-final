@@ -309,7 +309,7 @@
                 ${escapeHtml(formatCategory(img.category))}
             </div>
             <div class="image-card-overlay">
-              <button class="btn-img-delete" onclick="deleteImage(${img.id})">Delete</button>
+              <button class="btn-img-delete" onclick="deleteImage('${img.id}')">Delete</button>
             </div>
           </div>
         `).join('');
