@@ -118,37 +118,23 @@
   if (portfolioGrid) {
     const formatCategory = (cat) => {
         const map = { 
-          'south-indian': 'South Indian', 
-          'madisar': 'Madisar', 
-          'bengali': 'Bengali', 
-          'gujarati': 'Gujarati', 
-          'kerala-mundu': 'Kerala Mundu', 
-          'half-saree': 'Half Saree', 
-          'nauvari': 'Nauvari', 
-          'dhoti': 'Dhoti Style', 
-          'fusion': 'Fusion', 
+          'bridal-saree': 'Bridal Saree', 
+          'lehenga': 'Lehenga', 
           'pre-pleated': 'Pre-Pleated', 
-          'lehenga': 'Lehenga Draping', 
-          'groom-dhoti': "Groom's Dhoti",
-          'guest': 'Guest Draping' 
+          'event': 'Event Styling', 
+          'gujarati': 'Gujarati', 
+          'fusion': 'Fusion'
         };
         return map[cat] || cat;
     };
 
     const categoryDescriptions = {
-      'south-indian': 'Traditional and elegant drapes featuring Kanchipuram and Silk sarees',
-      'madisar': 'Authentic Brahmin style 9-yard saree draping for rituals and traditions',
-      'bengali': "The iconic 'Atpoure' drape with classic box pleats and a regal look",
-      'gujarati': 'Front pallu styles including Seedha Pallu and traditional Gadhwal',
-      'kerala-mundu': 'Graceful Kasavu Mundu Neriyathum drapes for a serene ethnic look',
-      'half-saree': 'Langa Voni and Dhavani styles for youthful and vibrant celebrations',
-      'nauvari': 'Traditional Maharashtrian 9-yard drape for a bold cultural statement',
-      'dhoti': 'Modern dhoti-style saree drapes for a trendy fusion appearance',
-      'fusion': 'Innovative and contemporary draping for modern brides and fashionistas',
-      'pre-pleated': 'Professional pre-pleating and box folding for a stress-free experience',
+      'bridal-saree': 'Traditional and elegant bridal saree draping',
       'lehenga': 'Beautiful lehenga and veil draping for your special day',
-      'groom-dhoti': "Specialized dhoti and veshti draping for the elegant groom",
-      'guest': 'Elegant saree and lehenga styling for wedding guests and family members'
+      'pre-pleated': 'Professional pre-pleating and box folding for a stress-free experience',
+      'event': 'Elegant styling for special events and occasions',
+      'gujarati': 'Front pallu styles including Seedha Pallu and traditional Gadhwal',
+      'fusion': 'Innovative and contemporary draping for modern brides and fashionistas'
     };
 
     // Read category from URL query param
