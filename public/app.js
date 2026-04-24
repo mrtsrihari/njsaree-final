@@ -128,7 +128,7 @@
           'dhoti': 'Dhoti Style', 
           'fusion': 'Fusion', 
           'pre-pleated': 'Pre-Pleated', 
-          'dupatta': 'Dupatta Draping', 
+          'lehenga': 'Lehenga Draping', 
           'groom-dhoti': "Groom's Dhoti",
           'guest': 'Guest Draping' 
         };
@@ -146,7 +146,7 @@
       'dhoti': 'Modern dhoti-style saree drapes for a trendy fusion appearance',
       'fusion': 'Innovative and contemporary draping for modern brides and fashionistas',
       'pre-pleated': 'Professional pre-pleating and box folding for a stress-free experience',
-      'dupatta': 'Creative dupatta and veil draping for Lehengas and festive wear',
+      'lehenga': 'Beautiful lehenga and veil draping for your special day',
       'groom-dhoti': "Specialized dhoti and veshti draping for the elegant groom",
       'guest': 'Elegant saree and lehenga styling for wedding guests and family members'
     };
