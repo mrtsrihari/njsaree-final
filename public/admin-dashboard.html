@@ -144,6 +144,8 @@
     .toast.success { background: #27AE60; }
     .toast.error { background: #E74C3C; }
 
+    .sortable-ghost { opacity: 0.4; border: 2px dashed var(--gold) !important; background: var(--ivory) !important; }
+
     @media (max-width: 768px) {
       .dash-stats { grid-template-columns: 1fr; }
       .admin-review-card { flex-direction: column; }
@@ -204,7 +206,10 @@
         <div class="upload-status" id="uploadStatus"></div>
       </div>
 
-      <div class="dash-section-title" style="margin-top:8px;">Portfolio Gallery <span class="badge" id="imageBadge">0</span></div>
+      <div class="dash-section-title" style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
+        <div>Portfolio Gallery <span class="badge" id="imageBadge">0</span></div>
+        <button id="btnSaveOrder" style="display:none; padding: 8px 16px; background: var(--gold); color: var(--black); border: none; border-radius: 50px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.3s;">Save Order</button>
+      </div>
       
       <div class="portfolio-filters" style="display:flex; gap:10px; margin-bottom: 20px; flex-wrap: wrap;">
         <button class="dash-tab active filter-admin-btn" data-filter="all" style="padding: 8px 16px; font-size: 0.8rem; border-radius: 50px; background: var(--white); border: 1px solid var(--gold); cursor: pointer; transition: all 0.2s;">All</button>
@@ -283,6 +288,8 @@
 
 
     // ─── Images ───
+    let sortableGallery = null;
+
     async function loadImages() {
       try {
         const res = await fetch('/api/portfolio');
@@ -318,8 +325,53 @@
         const activeFilterBtn = document.querySelector('.filter-admin-btn.active');
         if (activeFilterBtn) activeFilterBtn.click();
         
+        // Initialize Sortable
+        if (sortableGallery) sortableGallery.destroy();
+        sortableGallery = new Sortable(gallery, {
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            onEnd: function() {
+                document.getElementById('btnSaveOrder').style.display = 'block';
+            }
+        });
+        
       } catch { showToast('Failed to load images', 'error'); }
     }
+
+    // Save Order
+    document.getElementById('btnSaveOrder').addEventListener('click', async () => {
+        const btn = document.getElementById('btnSaveOrder');
+        btn.textContent = 'Saving...';
+        btn.disabled = true;
+
+        // Get visible cards in their current DOM order
+        const visibleCards = Array.from(document.querySelectorAll('.image-card')).filter(card => card.style.display !== 'none');
+        
+        const orderUpdates = visibleCards.map((card, index) => {
+            const id = card.id.replace('img-', '');
+            return { id, order: index };
+        });
+
+        try {
+            const res = await fetch('/api/portfolio/reorder', {
+                method: 'PUT',
+                headers: authHeaders(),
+                body: JSON.stringify({ orderUpdates })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Order saved successfully', 'success');
+                btn.style.display = 'none';
+            } else {
+                showToast(data.error || 'Failed to save order', 'error');
+            }
+        } catch {
+            showToast('Network error saving order', 'error');
+        } finally {
+            btn.textContent = 'Save Order';
+            btn.disabled = false;
+        }
+    });
 
     document.getElementById('uploadForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -395,5 +447,6 @@
       return el.innerHTML;
     }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 </body>
 </html>

@@ -86,6 +86,7 @@ router.get('/', async (req, res) => {
                 public_id: img.public_id,
                 caption: context.caption || '',
                 category: context.category || 'bridal-saree',
+                order: parseInt(context.order) || 0,
                 created_at: img.created_at
             };
         });
@@ -93,6 +94,12 @@ router.get('/', async (req, res) => {
         if (categoryFilter) {
             images = images.filter(img => img.category === categoryFilter);
         }
+
+        // Sort by order ascending, then by created_at descending
+        images.sort((a, b) => {
+            if (a.order !== b.order) return a.order - b.order;
+            return new Date(b.created_at) - new Date(a.created_at);
+        });
 
         res.json({ success: true, images });
     } catch (err) {
@@ -161,6 +168,33 @@ router.delete('/:id', tokenAuth, async (req, res) => {
     } catch (err) {
         console.error('Delete error:', err);
         res.status(500).json({ success: false, error: 'Delete failed' });
+    }
+});
+
+// PUT reorder images (admin only)
+router.put('/reorder', tokenAuth, async (req, res) => {
+    try {
+        const { orderUpdates } = req.body;
+        if (!orderUpdates || !Array.isArray(orderUpdates)) {
+            return res.status(400).json({ success: false, error: 'Invalid payload' });
+        }
+
+        if (hasCloudinary) {
+            // Process updates sequentially
+            for (const item of orderUpdates) {
+                const publicId = decodeURIComponent(item.id);
+                try {
+                    await cloudinary.v2.uploader.add_context(`order=${item.order}`, [publicId]);
+                } catch (ctxErr) {
+                    console.warn(`Failed to update order for ${publicId}:`, ctxErr.message);
+                }
+            }
+        }
+        
+        res.json({ success: true, message: 'Order updated successfully' });
+    } catch (err) {
+        console.error('Reorder error:', err);
+        res.status(500).json({ success: false, error: 'Reorder failed' });
     }
 });
 
